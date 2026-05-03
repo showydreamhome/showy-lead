@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width">
+<title>SHOWY CRM</title>
+
+<style>
+body{background:#0d0d0d;color:white;font-family:Segoe UI;}
+.header{text-align:center;color:gold;padding:15px;font-size:22px;}
+table{width:100%;border-collapse:collapse;background:#111;}
+th,td{padding:10px;border-bottom:1px solid #333;}
+th{color:gold;}
+button{background:gold;border:none;padding:6px;border-radius:6px;}
+select,input{padding:5px;border-radius:5px;}
+</style>
+</head>
+
+<body>
+
+<div class="header">SHOWY CRM DASHBOARD</div>
+
+<button onclick="loadData()">Refresh</button>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Phone</th>
+<th>Email</th>
+<th>Service</th>
+<th>Status</th>
+<th>Assigned</th>
+<th>Handled By</th>
+<th>Map</th>
+</tr>
+</thead>
+
+<tbody id="table"></tbody>
+
+</table>
+
+<script>
+
+const API="https://script.google.com/macros/s/AKfycbwRCdWQq7T52lcFdryIDaEEsq73PE6_cCaPjdfY3Xywg5V0GjKMhyjOycllaPSUATF1/exec";
+
+async function loadData(){
+
+const res=await fetch(API);
+const data=await res.json();
+
+let html="";
+
+data.forEach(row=>{
+
+html+=`
+<tr>
+
+<td>${row.Name||""}</td>
+<td>${row["Phone No"]||""}</td>
+<td>${row.Email||""}</td>
+<td>${row.Service||""}</td>
+
+<td>
+<select onchange="updateStatus('${row["Phone No"]}',this.value)">
+<option ${row.Status=="New"?"selected":""}>New</option>
+<option ${row.Status=="Contacted"?"selected":""}>Contacted</option>
+<option ${row.Status=="Closed"?"selected":""}>Closed</option>
+</select>
+</td>
+
+<td>
+<select onchange="assign('${row["Phone No"]}',this.value)">
+<option ${row.Assigned=="Hari"?"selected":""}>Hari</option>
+<option ${row.Assigned=="Ajay"?"selected":""}>Ajay</option>
+<option ${row.Assigned=="Thejas"?"selected":""}>Thejas</option>
+<option ${row.Assigned=="Nihal"?"selected":""}>Nihal</option>
+<option ${row.Assigned=="Chandan"?"selected":""}>Chandan</option>
+<option ${row.Assigned=="Subathra"?"selected":""}>Subathra</option>
+</select>
+</td>
+
+<td>
+<input value="${row.HandledBy||""}" 
+onchange="updateHandledBy('${row["Phone No"]}',this.value)">
+</td>
+
+<td>
+<a target="_blank"
+href="https://maps.google.com/?q=${row.Latitude},${row.Longitude}">
+<button>View</button>
+</a>
+</td>
+
+</tr>`;
+});
+
+document.getElementById("table").innerHTML=html;
+}
+
+
+async function updateStatus(phone,status){
+await fetch(API,{
+method:"POST",
+mode:"no-cors",
+body:JSON.stringify({
+action:"updateStatus",
+phone,
+status,
+updatedBy:"Admin"
+})
+});
+loadData();
+}
+
+async function assign(phone,assignedTo){
+await fetch(API,{
+method:"POST",
+mode:"no-cors",
+body:JSON.stringify({
+action:"assign",
+phone,
+assignedTo
+})
+});
+loadData();
+}
+
+async function updateHandledBy(phone,handledBy){
+await fetch(API,{
+method:"POST",
+mode:"no-cors",
+body:JSON.stringify({
+action:"updateHandledBy",
+phone,
+handledBy
+})
+});
+loadData();
+}
+
+loadData();
+
+</script>
+
+</body>
+</html>

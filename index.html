@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width">
+<title>SHOWY Lead</title>
+
+<!-- LEAFLET -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+body {
+  background:#0d0d0d;
+  color:white;
+  font-family:Segoe UI;
+  text-align:center;
+}
+
+.box {
+  max-width:400px;
+  margin:auto;
+  padding:20px;
+  background:#111;
+  border-radius:12px;
+}
+
+input,select {
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border-radius:8px;
+  border:none;
+}
+
+button {
+  width:100%;
+  padding:12px;
+  background:gold;
+  border:none;
+  border-radius:8px;
+  font-weight:bold;
+  margin-top:10px;
+}
+
+#map {
+  width:100%;
+  height:250px;
+  border-radius:10px;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h2 style="color:gold;">SHOWY</h2>
+
+<div class="box">
+
+<input id="name" placeholder="Name">
+<input id="phone" placeholder="Phone">
+<input id="email" placeholder="Email">
+<input id="address" placeholder="Address (auto-filled)">
+
+<select id="service">
+<option>Interiors</option>
+<option>Construction</option>
+<option>Home Automation</option>
+</select>
+<label style="display:block;margin-top:10px;">Handled By</label>
+
+<select id="handledBy">
+  <option value="">Select Person</option>
+  <option value="Hari">Hari</option>
+  <option value="Ajay">Ajay</option>
+  <option value="Thejas">Thejas</option>
+  <option value="Nihal">Nihal</option>
+  <option value="Chandan">Chandan</option>
+  <option value="Subathra">Subathra</option>
+</select>
+
+<button onclick="getLocation()">📍 Detect My Location</button>
+
+<div id="map"></div>
+
+<button onclick="submitForm()">Submit</button>
+
+</div>
+
+<script>
+
+const API = "https://script.google.com/macros/s/AKfycbwRCdWQq7T52lcFdryIDaEEsq73PE6_cCaPjdfY3Xywg5V0GjKMhyjOycllaPSUATF1/exec";
+
+let map, marker;
+let lat = 0, lng = 0;
+
+// 🔥 INIT MAP
+function initMap(lat, lng) {
+
+  if (!map) {
+    map = L.map('map').setView([lat, lng], 17);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+
+    // CLICK TO MOVE
+    map.on('click', function (e) {
+      lat = e.latlng.lat;
+      lng = e.latlng.lng;
+      marker.setLatLng(e.latlng);
+      getAddress(lat, lng);
+    });
+
+    // DRAG PIN
+    marker.on('dragend', function (e) {
+      lat = e.target.getLatLng().lat;
+      lng = e.target.getLatLng().lng;
+      getAddress(lat, lng);
+    });
+
+  } else {
+    map.setView([lat, lng], 17);
+    marker.setLatLng([lat, lng]);
+  }
+
+  getAddress(lat, lng);
+}
+
+
+// 📍 GET CURRENT LOCATION
+function getLocation() {
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      lat = pos.coords.latitude;
+      lng = pos.coords.longitude;
+
+      initMap(lat, lng);
+    },
+    () => {
+      alert("Allow location access ❌");
+    },
+    {
+      enableHighAccuracy: true
+    }
+  );
+}
+
+
+// 🌍 REVERSE GEOCODING (FREE)
+function getAddress(lat, lng) {
+
+  fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("address").value = data.display_name || "";
+    })
+    .catch(() => {
+      console.log("Address fetch failed");
+    });
+
+}
+
+
+// 🚀 SUBMIT
+function submitForm() {
+
+  const nameVal = document.getElementById("name").value.trim();
+  const phoneVal = document.getElementById("phone").value.trim();
+  const emailVal = document.getElementById("email").value.trim();
+  const addressVal = document.getElementById("address").value.trim();
+  const serviceVal = document.getElementById("service").value;
+
+  if (!nameVal || !phoneVal) {
+    alert("Enter name & phone");
+    return;
+  }
+
+  if (!lat || !lng) {
+    alert("Please detect location");
+    return;
+  }
+
+  fetch(API, {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify({
+      name: nameVal,
+      phone: phoneVal,
+      email: emailVal,
+      address: addressVal,
+      service: serviceVal,
+      lat: lat,
+      lng: lng
+    })
+  });
+
+  alert("Lead Submitted ✅");
+
+  // RESET
+  document.getElementById("name").value = "";
+  document.getElementById("phone").value = "";
+  document.getElementById("email").value = "";
+  document.getElementById("address").value = "";
+}
+
+
+// 🔥 AUTO LOAD LOCATION ON PAGE OPEN
+getLocation();
+
+</script>
+
+</body>
+</html>
