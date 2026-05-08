@@ -1,215 +1,339 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width">
-<title>SHOWY Lead</title>
 
-<!-- LEAFLET -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SHOWY CRM</title>
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
-body {
-  background:#0d0d0d;
-  color:white;
-  font-family:Segoe UI;
-  text-align:center;
+
+body{
+    margin:0;
+    padding:0;
+    background:#000;
+    font-family:Arial,sans-serif;
+    color:white;
 }
 
-.box {
-  max-width:400px;
-  margin:auto;
-  padding:20px;
-  background:#111;
-  border-radius:12px;
+.container{
+    width:90%;
+    max-width:700px;
+    margin:30px auto;
+    background:#080808;
+    padding:30px;
+    border-radius:25px;
 }
 
-input,select {
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-  border-radius:8px;
-  border:none;
+h1{
+    text-align:center;
+    color:gold;
 }
 
-button {
-  width:100%;
-  padding:12px;
-  background:gold;
-  border:none;
-  border-radius:8px;
-  font-weight:bold;
-  margin-top:10px;
+.section-title{
+    color:gold;
+    font-size:22px;
+    margin-top:25px;
+    margin-bottom:15px;
+    font-weight:bold;
 }
 
-#map {
-  width:100%;
-  height:250px;
-  border-radius:10px;
-  margin-top:10px;
+.input-box{
+    width:100%;
+    padding:18px;
+    border:none;
+    border-radius:14px;
+    background:#141414;
+    color:white;
+    font-size:18px;
+    margin-bottom:20px;
+    box-sizing:border-box;
 }
+
+button{
+    width:100%;
+    padding:18px;
+    border:none;
+    border-radius:14px;
+    background:gold;
+    color:black;
+    font-size:20px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+#map{
+    height:300px;
+    margin-top:20px;
+    border-radius:20px;
+}
+
+textarea{
+    height:120px;
+    resize:none;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<h2 style="color:gold;">SHOWY</h2>
+<div class="container">
 
-<div class="box">
+<h1>SHOWY CRM</h1>
 
-<input id="name" placeholder="Name">
-<input id="phone" placeholder="Phone">
-<input id="email" placeholder="Email">
-<input id="address" placeholder="Address (auto-filled)">
+<div class="section-title">👤 Client Details</div>
 
-<select id="service">
+<input type="text" id="clientName" placeholder="Client Name" class="input-box">
+
+<input type="tel" id="whatsapp" placeholder="WhatsApp Number" class="input-box">
+
+<input type="tel" id="phone" placeholder="Phone Number" class="input-box">
+
+<input type="email" id="email" placeholder="Email" class="input-box">
+
+<textarea id="address" class="input-box" placeholder="Address"></textarea>
+
+<div class="section-title">🏠 Property Details</div>
+
+<input type="text" id="propertyName" placeholder="Property Name" class="input-box">
+
+<select id="propertyType" class="input-box">
+<option value="">Property Type</option>
+<option>Apartment</option>
+<option>Villa</option>
+<option>Individual House</option>
+</select>
+
+<select id="grade" class="input-box">
+<option value="">Grade</option>
+<option>A</option>
+<option>B</option>
+<option>C</option>
+</select>
+
+<input type="text" id="costSqft" placeholder="Cost Per Sqft" class="input-box">
+
+<input type="text"
+id="staffDetails1"
+placeholder="Staff Details 1 (HK, Security, Sales Team)"
+class="input-box">
+
+<input type="text"
+id="staffDetails2"
+placeholder="Staff Details 2 (HK, Security, Sales Team)"
+class="input-box">
+
+<div class="section-title">🛠 Service</div>
+
+<select id="service" class="input-box">
+<option value="">Select Service</option>
 <option>Interiors</option>
 <option>Construction</option>
-<option>Home Automation</option>
-</select>
-<label style="display:block;margin-top:10px;">Handled By</label>
-
-<select id="handledBy">
-  <option value="">Select Person</option>
-  <option value="Hari">Hari</option>
-  <option value="Ajay">Ajay</option>
-  <option value="Thejas">Thejas</option>
-  <option value="Nihal">Nihal</option>
-  <option value="Chandan">Chandan</option>
-  <option value="Subathra">Subathra</option>
+<option>Home automation</option>
 </select>
 
-<button onclick="getLocation()">📍 Detect My Location</button>
+<div class="section-title">📢 Sales Team</div>
+
+<select id="marketing1" class="input-box">
+<option value="">Team Member 1</option>
+<option>Hari</option>
+<option>Ajay</option>
+<option>Thejas</option>
+<option>Chandan</option>
+</select>
+
+<select id="marketing2" class="input-box">
+<option value="">Team Member 2</option>
+<option>Hari</option>
+<option>Ajay</option>
+<option>Thejas</option>
+<option>Chandan</option>
+</select>
+
+<div class="section-title">📸 Property Photo</div>
+
+<input type="file" id="photo" class="input-box">
+
+<button onclick="detectLocation()">📍 Detect Location</button>
 
 <div id="map"></div>
 
-<button onclick="submitForm()">Submit</button>
+<div class="section-title">📝 Remarks</div>
+
+<textarea id="remarks" class="input-box"></textarea>
+
+<button onclick="submitForm()">Submit Lead</button>
 
 </div>
 
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 <script>
 
-const API = "https://script.google.com/macros/s/AKfycbwRCdWQq7T52lcFdryIDaEEsq73PE6_cCaPjdfY3Xywg5V0GjKMhyjOycllaPSUATF1/exec";
+const API = "https://script.google.com/macros/s/AKfycbyhOBAiWgj8h-y4Z34GUeClyGM4mBxytaW8myyC8RUHC7M4Kv6r_cpwH83XcZaVagfQ/exec";
 
-let map, marker;
-let lat = 0, lng = 0;
+let map;
+let marker;
+let lat = "";
+let lng = "";
 
-// 🔥 INIT MAP
-function initMap(lat, lng) {
+function generateLeadID(){
 
-  if (!map) {
-    map = L.map('map').setView([lat, lng], 17);
+    const random = Math.floor(1000 + Math.random() * 9000);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-    marker = L.marker([lat, lng], { draggable: true }).addTo(map);
-
-    // CLICK TO MOVE
-    map.on('click', function (e) {
-      lat = e.latlng.lat;
-      lng = e.latlng.lng;
-      marker.setLatLng(e.latlng);
-      getAddress(lat, lng);
-    });
-
-    // DRAG PIN
-    marker.on('dragend', function (e) {
-      lat = e.target.getLatLng().lat;
-      lng = e.target.getLatLng().lng;
-      getAddress(lat, lng);
-    });
-
-  } else {
-    map.setView([lat, lng], 17);
-    marker.setLatLng([lat, lng]);
-  }
-
-  getAddress(lat, lng);
+    return "SHOWY-" + random;
 }
 
+function detectLocation(){
 
-// 📍 GET CURRENT LOCATION
-function getLocation() {
+    navigator.geolocation.getCurrentPosition(
 
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      lat = pos.coords.latitude;
-      lng = pos.coords.longitude;
+        async(position)=>{
 
-      initMap(lat, lng);
-    },
-    () => {
-      alert("Allow location access ❌");
-    },
-    {
-      enableHighAccuracy: true
+            lat = position.coords.latitude;
+            lng = position.coords.longitude;
+
+            if(!map){
+
+                map = L.map('map').setView([lat,lng],16);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+                    attribution:'© OpenStreetMap'
+                }).addTo(map);
+
+                marker = L.marker([lat,lng]).addTo(map);
+
+            }else{
+
+                marker.setLatLng([lat,lng]);
+            }
+
+            const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+            );
+
+            const data = await response.json();
+
+            document.getElementById("address").value = data.display_name;
+        }
+
+    );
+}
+
+async function submitForm(){
+
+    const clientName = document.getElementById("clientName").value.trim();
+
+    const whatsapp = document.getElementById("whatsapp").value.trim();
+
+    if(clientName==="" || whatsapp===""){
+
+        alert("Enter Client Name & WhatsApp");
+        return;
     }
-  );
-}
 
+    const file = document.getElementById("photo").files[0];
 
-// 🌍 REVERSE GEOCODING (FREE)
-function getAddress(lat, lng) {
+let photoURL = "";
 
-  fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById("address").value = data.display_name || "";
-    })
-    .catch(() => {
-      console.log("Address fetch failed");
+if(file){
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    formData.append(
+        "upload_preset",
+        "showycrm"
+    );
+
+    const cloudResponse = await fetch(
+    "https://api.cloudinary.com/v1_1/dm93fbznl/image/upload",
+    {
+        method:"POST",
+        body:formData
     });
 
+    const cloudData = await cloudResponse.json();
+
+    console.log(cloudData);
+
+    photoURL = cloudData.url;
+    console.log(photoURL);
 }
 
+    const response = await fetch(API,{
 
-// 🚀 SUBMIT
-function submitForm() {
+        method:"POST",
 
-  const nameVal = document.getElementById("name").value.trim();
-  const phoneVal = document.getElementById("phone").value.trim();
-  const emailVal = document.getElementById("email").value.trim();
-  const addressVal = document.getElementById("address").value.trim();
-  const serviceVal = document.getElementById("service").value;
+        body:JSON.stringify({
 
-  if (!nameVal || !phoneVal) {
-    alert("Enter name & phone");
-    return;
-  }
+            leadID: generateLeadID(),
 
-  if (!lat || !lng) {
-    alert("Please detect location");
-    return;
-  }
+            clientName: document.getElementById("clientName").value,
 
-  fetch(API, {
-    method: "POST",
-    mode: "no-cors",
-    body: JSON.stringify({
-      name: nameVal,
-      phone: phoneVal,
-      email: emailVal,
-      address: addressVal,
-      service: serviceVal,
-      lat: lat,
-      lng: lng
-    })
-  });
+            whatsapp: document.getElementById("whatsapp").value,
 
-  alert("Lead Submitted ✅");
+            phone: document.getElementById("phone").value,
 
-  // RESET
-  document.getElementById("name").value = "";
-  document.getElementById("phone").value = "";
-  document.getElementById("email").value = "";
-  document.getElementById("address").value = "";
+            email: document.getElementById("email").value,
+
+            address: document.getElementById("address").value,
+
+            propertyName: document.getElementById("propertyName").value,
+
+            propertyType: document.getElementById("propertyType").value,
+
+            grade: document.getElementById("grade").value,
+
+            costSqft: document.getElementById("costSqft").value,
+
+            staffDetails1: document.getElementById("staffDetails1").value,
+
+            staffDetails2: document.getElementById("staffDetails2").value,
+
+            service: document.getElementById("service").value,
+
+            marketing1: document.getElementById("marketing1").value,
+
+            marketing2: document.getElementById("marketing2").value,
+
+            remarks: document.getElementById("remarks").value,
+
+            lat: lat,
+
+            lng: lng,
+
+            photoURL: photoURL
+
+        })
+
+    });
+
+
+
+const result = await response.json();
+
+console.log(result);
+
+if(result.status === "success"){
+
+    alert("Lead Submitted Successfully ✅");
+
+    location.reload();
+
+}else{
+
+    alert("Image Upload Failed ❌");
+
+    console.log(result.message);
 }
-
-
-// 🔥 AUTO LOAD LOCATION ON PAGE OPEN
-getLocation();
+}
 
 </script>
 
