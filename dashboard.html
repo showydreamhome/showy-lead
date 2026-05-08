@@ -1,141 +1,168 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width">
-<title>SHOWY CRM</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SHOWY CRM Dashboard</title>
 
 <style>
-body{background:#0d0d0d;color:white;font-family:Segoe UI;}
-.header{text-align:center;color:gold;padding:15px;font-size:22px;}
-table{width:100%;border-collapse:collapse;background:#111;}
-th,td{padding:10px;border-bottom:1px solid #333;}
-th{color:gold;}
-button{background:gold;border:none;padding:6px;border-radius:6px;}
-select,input{padding:5px;border-radius:5px;}
+
+body{
+    background:black;
+    color:white;
+    font-family:Arial;
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+    color:gold;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:30px;
+}
+
+th{
+    background:gold;
+    color:black;
+    padding:15px;
+}
+
+td{
+    background:#111;
+    padding:12px;
+}
+
+button{
+    border:none;
+    padding:8px 15px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.photo-btn{
+    background:#2196f3;
+    color:white;
+}
+
+.map-btn{
+    background:gold;
+    color:black;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<div class="header">SHOWY CRM DASHBOARD</div>
-
-<button onclick="loadData()">Refresh</button>
+<h1>SHOWY CRM DASHBOARD</h1>
 
 <table>
+
 <thead>
+
 <tr>
-<th>Name</th>
-<th>Phone</th>
-<th>Email</th>
+
+<th>Lead ID</th>
+<th>Client</th>
+<th>WhatsApp</th>
+<th>Property</th>
+<th>Type</th>
 <th>Service</th>
-<th>Status</th>
-<th>Assigned</th>
-<th>Handled By</th>
-<th>Map</th>
+<th>Sales</th>
+<th>Photo</th>
+<th>Location</th>
+
 </tr>
+
 </thead>
 
-<tbody id="table"></tbody>
+<tbody id="tableBody"></tbody>
 
 </table>
 
 <script>
 
-const API="https://script.google.com/macros/s/AKfycbwRCdWQq7T52lcFdryIDaEEsq73PE6_cCaPjdfY3Xywg5V0GjKMhyjOycllaPSUATF1/exec";
+const API = "https://script.google.com/macros/s/AKfycbyhOBAiWgj8h-y4Z34GUeClyGM4mBxytaW8myyC8RUHC7M4Kv6r_cpwH83XcZaVagfQ/exec";
 
 async function loadData(){
 
-const res=await fetch(API);
-const data=await res.json();
+    const response = await fetch(API);
 
-let html="";
+    const data = await response.json();
 
-data.forEach(row=>{
+    const tableBody = document.getElementById("tableBody");
 
-html+=`
-<tr>
+    tableBody.innerHTML = "";
 
-<td>${row.Name||""}</td>
-<td>${row["Phone No"]||""}</td>
-<td>${row.Email||""}</td>
-<td>${row.Service||""}</td>
+    data.reverse().forEach(row=>{
 
-<td>
-<select onchange="updateStatus('${row["Phone No"]}',this.value)">
-<option ${row.Status=="New"?"selected":""}>New</option>
-<option ${row.Status=="Contacted"?"selected":""}>Contacted</option>
-<option ${row.Status=="Closed"?"selected":""}>Closed</option>
-</select>
-</td>
+        tableBody.innerHTML += `
 
-<td>
-<select onchange="assign('${row["Phone No"]}',this.value)">
-<option ${row.Assigned=="Hari"?"selected":""}>Hari</option>
-<option ${row.Assigned=="Ajay"?"selected":""}>Ajay</option>
-<option ${row.Assigned=="Thejas"?"selected":""}>Thejas</option>
-<option ${row.Assigned=="Nihal"?"selected":""}>Nihal</option>
-<option ${row.Assigned=="Chandan"?"selected":""}>Chandan</option>
-<option ${row.Assigned=="Subathra"?"selected":""}>Subathra</option>
-</select>
-</td>
+        <tr>
 
-<td>
-<input value="${row.HandledBy||""}" 
-onchange="updateHandledBy('${row["Phone No"]}',this.value)">
-</td>
+        <td>${row.leadID || "-"}</td>
 
-<td>
-<a target="_blank"
-href="https://maps.google.com/?q=${row.Latitude},${row.Longitude}">
-<button>View</button>
-</a>
-</td>
+        <td>${row.clientName || "-"}</td>
 
-</tr>`;
-});
+        <td>
 
-document.getElementById("table").innerHTML=html;
+        <a href="https://wa.me/91${row.whatsapp}" target="_blank">
+
+        ${row.whatsapp || "-"}
+
+        </a>
+
+        </td>
+
+        <td>${row.propertyName || "-"}</td>
+
+        <td>${row.propertyType || "-"}</td>
+
+        <td>${row.service || "-"}</td>
+
+        <td>${row.marketing1 || "-"}</td>
+
+        <td>
+
+${
+    row.photoURL
+    ?
+    `<button class="photo-btn"
+    onclick="window.open('${row.photoURL}','_blank')">
+    View
+    </button>`
+    :
+    "-"
 }
 
+</td>
 
-async function updateStatus(phone,status){
-await fetch(API,{
-method:"POST",
-mode:"no-cors",
-body:JSON.stringify({
-action:"updateStatus",
-phone,
-status,
-updatedBy:"Admin"
-})
-});
-loadData();
-}
+        <td>
 
-async function assign(phone,assignedTo){
-await fetch(API,{
-method:"POST",
-mode:"no-cors",
-body:JSON.stringify({
-action:"assign",
-phone,
-assignedTo
-})
-});
-loadData();
-}
+        <a href="https://maps.google.com/?q=${row.lat || 0},${row.lng || 0}" target="_blank">
 
-async function updateHandledBy(phone,handledBy){
-await fetch(API,{
-method:"POST",
-mode:"no-cors",
-body:JSON.stringify({
-action:"updateHandledBy",
-phone,
-handledBy
-})
-});
-loadData();
+        <button class="map-btn">
+        Map
+        </button>
+
+        </a>
+
+        </td>
+
+        </tr>
+
+        `;
+
+    });
+
 }
 
 loadData();
