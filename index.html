@@ -7,36 +7,47 @@
 
 <title>SHOWY CRM</title>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
 <style>
 
-body{
+*{
     margin:0;
     padding:0;
+    box-sizing:border-box;
+}
+
+body{
     background:#000;
     font-family:Arial,sans-serif;
     color:white;
+    padding:20px;
 }
 
 .container{
-    width:90%;
-    max-width:700px;
-    margin:30px auto;
+    width:100%;
+    max-width:750px;
+    margin:auto;
     background:#080808;
     padding:30px;
-    border-radius:25px;
+    border-radius:30px;
+    border:1px solid #1f1f1f;
+    box-shadow:0 0 25px rgba(255,215,0,0.1);
 }
 
 h1{
     text-align:center;
     color:gold;
+    font-size:42px;
+    margin-bottom:30px;
+    letter-spacing:2px;
 }
 
 .section-title{
     color:gold;
-    font-size:22px;
-    margin-top:25px;
+    font-size:24px;
+    margin-top:30px;
     margin-bottom:15px;
     font-weight:bold;
 }
@@ -45,35 +56,95 @@ h1{
     width:100%;
     padding:18px;
     border:none;
-    border-radius:14px;
+    border-radius:16px;
     background:#141414;
     color:white;
     font-size:18px;
     margin-bottom:20px;
-    box-sizing:border-box;
+    outline:none;
+    transition:0.3s;
+}
+
+.input-box:focus{
+    border:1px solid gold;
+    box-shadow:0 0 10px rgba(255,215,0,0.3);
+}
+
+textarea{
+    height:120px;
+    resize:none;
 }
 
 button{
     width:100%;
     padding:18px;
     border:none;
-    border-radius:14px;
+    border-radius:16px;
     background:gold;
     color:black;
-    font-size:20px;
+    font-size:22px;
     font-weight:bold;
     cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:scale(1.02);
 }
 
 #map{
     height:300px;
-    margin-top:20px;
     border-radius:20px;
+    overflow:hidden;
+    margin-top:20px;
 }
 
-textarea{
-    height:120px;
-    resize:none;
+.file-box{
+    background:#141414;
+    padding:20px;
+    border-radius:16px;
+    margin-bottom:20px;
+}
+
+.service-dropdown{
+    margin-bottom:20px;
+}
+
+.dropdown-btn{
+    background:#141414;
+    padding:18px;
+    border-radius:16px;
+    font-size:18px;
+    cursor:pointer;
+    border:1px solid #222;
+}
+
+.dropdown-content{
+    display:none;
+    background:#141414;
+    border-radius:16px;
+    padding:20px;
+    margin-top:10px;
+    border:1px solid #222;
+}
+
+.dropdown-content label{
+    display:block;
+    margin-bottom:15px;
+    font-size:18px;
+}
+
+.dropdown-content input{
+    width:18px;
+    height:18px;
+    margin-right:10px;
+}
+
+.footer{
+    text-align:center;
+    margin-top:25px;
+    color:#777;
+    font-size:14px;
 }
 
 </style>
@@ -84,92 +155,256 @@ textarea{
 
 <div class="container">
 
-<h1>SHOWY CRM</h1>
+<h1>✨ SHOWY CRM</h1>
 
-<div class="section-title">👤 Client Details</div>
+<div class="section-title">
+👤 Client Details
+</div>
 
-<input type="text" id="clientName" placeholder="Client Name" class="input-box">
+<input type="text"
+id="clientName"
+placeholder="Client Name"
+class="input-box">
 
-<input type="tel" id="whatsapp" placeholder="WhatsApp Number" class="input-box">
+<input type="tel"
+id="whatsapp"
+placeholder="WhatsApp Number"
+class="input-box">
 
-<input type="tel" id="phone" placeholder="Phone Number" class="input-box">
+<input type="tel"
+id="phone"
+placeholder="Phone Number"
+class="input-box">
 
-<input type="email" id="email" placeholder="Email" class="input-box">
+<input type="email"
+id="email"
+placeholder="Email Address"
+class="input-box">
 
-<textarea id="address" class="input-box" placeholder="Address"></textarea>
+<textarea
+id="address"
+class="input-box"
+placeholder="Address"></textarea>
 
-<div class="section-title">🏠 Property Details</div>
+<div class="section-title">
+🏠 Property Details
+</div>
 
-<input type="text" id="propertyName" placeholder="Property Name" class="input-box">
+<input type="text"
+id="propertyName"
+placeholder="Property Name"
+class="input-box">
 
-<select id="propertyType" class="input-box">
-<option value="">Property Type</option>
+<select id="propertyType"
+class="input-box">
+
+<option value="">
+Select Property Type
+</option>
+
 <option>Apartment</option>
 <option>Villa</option>
 <option>Individual House</option>
+<option>Commercial</option>
+<option>Office</option>
+
 </select>
 
-<select id="grade" class="input-box">
-<option value="">Grade</option>
+<select id="grade"
+class="input-box">
+
+<option value="">
+Select Grade
+</option>
+
 <option>A</option>
 <option>B</option>
 <option>C</option>
+
 </select>
 
-<input type="text" id="costSqft" placeholder="Cost Per Sqft" class="input-box">
+<input type="text"
+id="costSqft"
+placeholder="Cost Per Sqft"
+class="input-box">
 
 <input type="text"
 id="staffDetails1"
-placeholder="Property Staff Details 1 (HK, Security, Sales Team)"
+placeholder="Staff Details 1 (HK, Security, Sales Team)"
 class="input-box">
 
 <input type="text"
 id="staffDetails2"
-placeholder="Property Staff Details 2 (HK, Security, Sales Team)"
+placeholder="Staff Details 2 (HK, Security, Sales Team)"
 class="input-box">
 
-<div class="section-title">🛠 Service</div>
+<input type="text"
+id="constructionWorker"
+placeholder="Construction Worker Details (Mason, Carpenter, Electrician, Plumber)"
+class="input-box">
 
-<select id="service" class="input-box">
-<option value="">Select Service</option>
-<option>Interiors</option>
-<option>Construction</option>
-<option>Home automation</option>
-</select>
+<div class="section-title">
+🛠 Services Required
+</div>
 
-<div class="section-title">📢 Sales Team</div>
+<div class="service-dropdown">
 
-<select id="marketing1" class="input-box">
-<option value="">Team Member 1</option>
+<div class="dropdown-btn"
+onclick="toggleServices()">
+
+Select Services ▼
+
+</div>
+
+<div class="dropdown-content"
+id="serviceDropdown">
+
+<label>
+<input type="checkbox"
+value="Interiors"
+class="service-checkbox">
+Interiors
+</label>
+
+<label>
+<input type="checkbox"
+value="Construction"
+class="service-checkbox">
+Construction
+</label>
+
+<label>
+<input type="checkbox"
+value="Home Automation"
+class="service-checkbox">
+Home Automation
+</label>
+
+<label>
+<input type="checkbox"
+value="Painting"
+class="service-checkbox">
+Painting
+</label>
+
+<label>
+<input type="checkbox"
+value="False Ceiling"
+class="service-checkbox">
+False Ceiling
+</label>
+
+<label>
+<input type="checkbox"
+value="Electrical"
+class="service-checkbox">
+Electrical
+</label>
+
+<label>
+<input type="checkbox"
+value="Plumbing"
+class="service-checkbox">
+Plumbing
+</label>
+
+<label>
+<input type="checkbox"
+value="UPVC"
+class="service-checkbox">
+UPVC
+</label>
+
+<label>
+<input type="checkbox"
+value="Solar"
+class="service-checkbox">
+Solar
+</label>
+
+<label>
+<input type="checkbox"
+value="CCTV"
+class="service-checkbox">
+CCTV
+</label>
+
+</div>
+
+</div>
+
+<div class="section-title">
+📢 Sales Team
+</div>
+
+<select id="marketing1"
+class="input-box">
+
+<option value="">
+Team Member 1
+</option>
+
 <option>Hari</option>
 <option>Ajay</option>
 <option>Thejas</option>
 <option>Chandan</option>
-<option>Subathra Natarajan</option>
+<option>Kiran</option>
+<option>Krishna Murty</option>
+<option>Naidu</option>
+
 </select>
 
-<select id="marketing2" class="input-box">
-<option value="">Team Member 2</option>
+<select id="marketing2"
+class="input-box">
+
+<option value="">
+Team Member 2
+</option>
+
 <option>Hari</option>
 <option>Ajay</option>
 <option>Thejas</option>
 <option>Chandan</option>
-<option>Subathra Natarajan</option>
+<option>Kiran</option>
+<option>Krishna Murty</option>
+<option>Naidu</option>
+
 </select>
 
-<div class="section-title">📸 Property Photo</div>
+<div class="section-title">
+📸 Property Photo
+</div>
 
-<input type="file" id="photo" class="input-box">
+<div class="file-box">
 
-<button onclick="detectLocation()">📍 Detect Location</button>
+<input type="file"
+id="photo"
+class="input-box">
+
+</div>
+
+<button onclick="detectLocation()">
+📍 Detect Location
+</button>
 
 <div id="map"></div>
 
-<div class="section-title">📝 Remarks</div>
+<div class="section-title">
+📝 Remarks
+</div>
 
-<textarea id="remarks" class="input-box"></textarea>
+<textarea
+id="remarks"
+class="input-box"
+placeholder="Enter Remarks"></textarea>
 
-<button onclick="submitForm()">Submit Lead</button>
+<button onclick="submitForm()">
+🚀 Submit Lead
+</button>
+
+<div class="footer">
+SHOWY CRM SYSTEM
+</div>
 
 </div>
 
@@ -177,16 +412,33 @@ class="input-box">
 
 <script>
 
-const API = "https://script.google.com/macros/s/AKfycbyhOBAiWgj8h-y4Z34GUeClyGM4mBxytaW8myyC8RUHC7M4Kv6r_cpwH83XcZaVagfQ/exec";
+const API =
+"https://script.google.com/macros/s/AKfycbyhOBAiWgj8h-y4Z34GUeClyGM4mBxytaW8myyC8RUHC7M4Kv6r_cpwH83XcZaVagfQ/exec";
 
 let map;
 let marker;
 let lat = "";
 let lng = "";
 
+function toggleServices(){
+
+    const dropdown =
+    document.getElementById("serviceDropdown");
+
+    if(dropdown.style.display === "block"){
+
+        dropdown.style.display = "none";
+
+    }else{
+
+        dropdown.style.display = "block";
+    }
+}
+
 function generateLeadID(){
 
-    const random = Math.floor(1000 + Math.random() * 9000);
+    const random =
+    Math.floor(1000 + Math.random() * 9000);
 
     return "SHOWY-" + random;
 }
@@ -202,26 +454,33 @@ function detectLocation(){
 
             if(!map){
 
-                map = L.map('map').setView([lat,lng],16);
+                map =
+                L.map('map').setView([lat,lng],16);
 
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+                L.tileLayer(
+                'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                {
                     attribution:'© OpenStreetMap'
                 }).addTo(map);
 
-                marker = L.marker([lat,lng]).addTo(map);
+                marker =
+                L.marker([lat,lng]).addTo(map);
 
             }else{
 
                 marker.setLatLng([lat,lng]);
             }
 
-            const response = await fetch(
+            const response =
+            await fetch(
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
             );
 
-            const data = await response.json();
+            const data =
+            await response.json();
 
-            document.getElementById("address").value = data.display_name;
+            document.getElementById("address").value =
+            data.display_name;
         }
 
     );
@@ -229,112 +488,152 @@ function detectLocation(){
 
 async function submitForm(){
 
-    const clientName = document.getElementById("clientName").value.trim();
+    const clientName =
+    document.getElementById("clientName")
+    .value.trim();
 
-    const whatsapp = document.getElementById("whatsapp").value.trim();
+    const whatsapp =
+    document.getElementById("whatsapp")
+    .value.trim();
 
-    if(clientName==="" || whatsapp===""){
+    if(clientName === "" || whatsapp === ""){
 
-        alert("Enter Client Name & WhatsApp");
+        alert(
+        "Enter Client Name & WhatsApp"
+        );
+
         return;
     }
 
-    const file = document.getElementById("photo").files[0];
+    const selectedServices =
+    Array.from(
+    document.querySelectorAll(
+    ".service-checkbox:checked"
+    ))
+    .map(cb => cb.value)
+    .join(", ");
 
-let photoURL = "";
+    const file =
+    document.getElementById("photo").files[0];
 
-if(file){
+    let photoURL = "";
 
-    const formData = new FormData();
+    if(file){
 
-    formData.append("file", file);
+        const formData =
+        new FormData();
 
-    formData.append(
+        formData.append(
+        "file",
+        file
+        );
+
+        formData.append(
         "upload_preset",
         "showycrm"
-    );
+        );
 
-    const cloudResponse = await fetch(
-    "https://api.cloudinary.com/v1_1/dm93fbznl/image/upload",
-    {
-        method:"POST",
-        body:formData
-    });
+        const cloudResponse =
+        await fetch(
+        "https://api.cloudinary.com/v1_1/dm93fbznl/image/upload",
+        {
+            method:"POST",
+            body:formData
+        });
 
-    const cloudData = await cloudResponse.json();
+        const cloudData =
+        await cloudResponse.json();
 
-    console.log(cloudData);
+        photoURL = cloudData.url;
+    }
 
-    photoURL = cloudData.url;
-    console.log(photoURL);
-}
-
-    const response = await fetch(API,{
+    const response =
+    await fetch(API,{
 
         method:"POST",
 
         body:JSON.stringify({
 
-            leadID: generateLeadID(),
+            leadID:
+            generateLeadID(),
 
-            clientName: document.getElementById("clientName").value,
+            clientName:
+            document.getElementById("clientName").value,
 
-            whatsapp: document.getElementById("whatsapp").value,
+            whatsapp:
+            document.getElementById("whatsapp").value,
 
-            phone: document.getElementById("phone").value,
+            phone:
+            document.getElementById("phone").value,
 
-            email: document.getElementById("email").value,
+            email:
+            document.getElementById("email").value,
 
-            address: document.getElementById("address").value,
+            address:
+            document.getElementById("address").value,
 
-            propertyName: document.getElementById("propertyName").value,
+            propertyName:
+            document.getElementById("propertyName").value,
 
-            propertyType: document.getElementById("propertyType").value,
+            propertyType:
+            document.getElementById("propertyType").value,
 
-            grade: document.getElementById("grade").value,
+            grade:
+            document.getElementById("grade").value,
 
-            costSqft: document.getElementById("costSqft").value,
+            costSqft:
+            document.getElementById("costSqft").value,
 
-            staffDetails1: document.getElementById("staffDetails1").value,
+            staffDetails1:
+            document.getElementById("staffDetails1").value,
 
-            staffDetails2: document.getElementById("staffDetails2").value,
+            staffDetails2:
+            document.getElementById("staffDetails2").value,
 
-            service: document.getElementById("service").value,
+            constructionWorker:
+            document.getElementById("constructionWorker").value,
 
-            marketing1: document.getElementById("marketing1").value,
+            service:
+            selectedServices,
 
-            marketing2: document.getElementById("marketing2").value,
+            marketing1:
+            document.getElementById("marketing1").value,
 
-            remarks: document.getElementById("remarks").value,
+            marketing2:
+            document.getElementById("marketing2").value,
 
-            lat: lat,
+            remarks:
+            document.getElementById("remarks").value,
 
-            lng: lng,
+            lat:lat,
 
-            photoURL: photoURL
+            lng:lng,
+
+            photoURL:photoURL
 
         })
 
     });
 
+    const result =
+    await response.json();
 
+    if(result.status === "success"){
 
-const result = await response.json();
+        alert(
+        "Lead Submitted Successfully ✅"
+        );
 
-console.log(result);
+        location.reload();
 
-if(result.status === "success"){
+    }else{
 
-    alert("Lead Submitted Successfully ✅");
+        alert(
+        "Upload Failed ❌"
+        );
 
-    location.reload();
-
-}else{
-
-    alert("Image Upload Failed ❌");
-
-    console.log(result.message);
-}
+        console.log(result.message);
+    }
 }
 
 </script>
