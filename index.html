@@ -92,6 +92,11 @@ button:hover{
     transform:scale(1.02);
 }
 
+button:disabled{
+    opacity:0.7;
+    cursor:not-allowed;
+}
+
 #map{
     height:300px;
     border-radius:20px;
@@ -117,6 +122,11 @@ button:hover{
     font-size:18px;
     cursor:pointer;
     border:1px solid #222;
+    transition:0.3s;
+}
+
+.dropdown-btn:hover{
+    border:1px solid gold;
 }
 
 .dropdown-content{
@@ -145,6 +155,39 @@ button:hover{
     margin-top:25px;
     color:#777;
     font-size:14px;
+}
+
+.loader{
+    border:5px solid #222;
+    border-top:5px solid gold;
+    border-radius:50%;
+    width:50px;
+    height:50px;
+    animation:spin 1s linear infinite;
+    margin:auto;
+}
+
+@keyframes spin{
+
+    0%{
+        transform:rotate(0deg);
+    }
+
+    100%{
+        transform:rotate(360deg);
+    }
+}
+
+#loadingBox{
+    display:none;
+    text-align:center;
+    margin-top:20px;
+}
+
+#loadingText{
+    margin-top:15px;
+    color:gold;
+    font-size:18px;
 }
 
 </style>
@@ -398,9 +441,22 @@ id="remarks"
 class="input-box"
 placeholder="Enter Remarks"></textarea>
 
-<button onclick="submitForm()">
+<button id="submitBtn"
+onclick="submitForm()">
+
 🚀 Submit Lead
+
 </button>
+
+<div id="loadingBox">
+
+<div class="loader"></div>
+
+<p id="loadingText">
+Uploading Lead...
+</p>
+
+</div>
 
 <div class="footer">
 SHOWY CRM SYSTEM
@@ -505,134 +561,173 @@ async function submitForm(){
         return;
     }
 
-    const selectedServices =
-    Array.from(
-    document.querySelectorAll(
-    ".service-checkbox:checked"
-    ))
-    .map(cb => cb.value)
-    .join(", ");
+    document.getElementById("submitBtn").disabled = true;
 
-    const file =
-    document.getElementById("photo").files[0];
+    document.getElementById("submitBtn").innerHTML =
+    "Please Wait...";
 
-    let photoURL = "";
+    document.getElementById("loadingBox").style.display =
+    "block";
 
-    if(file){
+    document.getElementById("loadingText").innerHTML =
+    "Uploading Lead...";
 
-        const formData =
-        new FormData();
+    try{
 
-        formData.append(
-        "file",
-        file
-        );
+        const selectedServices =
+        Array.from(
+        document.querySelectorAll(
+        ".service-checkbox:checked"
+        ))
+        .map(cb => cb.value)
+        .join(", ");
 
-        formData.append(
-        "upload_preset",
-        "showycrm"
-        );
+        const file =
+        document.getElementById("photo").files[0];
 
-        const cloudResponse =
-        await fetch(
-        "https://api.cloudinary.com/v1_1/dm93fbznl/image/upload",
-        {
+        let photoURL = "";
+
+        if(file){
+
+            document.getElementById("loadingText").innerHTML =
+            "Uploading Photo...";
+
+            const formData =
+            new FormData();
+
+            formData.append(
+            "file",
+            file
+            );
+
+            formData.append(
+            "upload_preset",
+            "showycrm"
+            );
+
+            const cloudResponse =
+            await fetch(
+            "https://api.cloudinary.com/v1_1/dm93fbznl/image/upload",
+            {
+                method:"POST",
+                body:formData
+            });
+
+            const cloudData =
+            await cloudResponse.json();
+
+            photoURL = cloudData.url;
+        }
+
+        document.getElementById("loadingText").innerHTML =
+        "Saving Lead Data...";
+
+        const response =
+        await fetch(API,{
+
             method:"POST",
-            body:formData
+
+            body:JSON.stringify({
+
+                leadID:
+                generateLeadID(),
+
+                clientName:
+                document.getElementById("clientName").value,
+
+                whatsapp:
+                document.getElementById("whatsapp").value,
+
+                phone:
+                document.getElementById("phone").value,
+
+                email:
+                document.getElementById("email").value,
+
+                address:
+                document.getElementById("address").value,
+
+                propertyName:
+                document.getElementById("propertyName").value,
+
+                propertyType:
+                document.getElementById("propertyType").value,
+
+                grade:
+                document.getElementById("grade").value,
+
+                costSqft:
+                document.getElementById("costSqft").value,
+
+                staffDetails1:
+                document.getElementById("staffDetails1").value,
+
+                staffDetails2:
+                document.getElementById("staffDetails2").value,
+
+                constructionWorker:
+                document.getElementById("constructionWorker").value,
+
+                service:
+                selectedServices,
+
+                marketing1:
+                document.getElementById("marketing1").value,
+
+                marketing2:
+                document.getElementById("marketing2").value,
+
+                remarks:
+                document.getElementById("remarks").value,
+
+                lat:lat,
+
+                lng:lng,
+
+                photoURL:photoURL
+
+            })
+
         });
 
-        const cloudData =
-        await cloudResponse.json();
+        const result =
+        await response.json();
 
-        photoURL = cloudData.url;
-    }
+        if(result.status === "success"){
 
-    const response =
-    await fetch(API,{
+            document.getElementById("loadingText").innerHTML =
+            "Lead Submitted Successfully ✅";
 
-        method:"POST",
+            setTimeout(()=>{
 
-        body:JSON.stringify({
+                location.reload();
 
-            leadID:
-            generateLeadID(),
+            },1500);
 
-            clientName:
-            document.getElementById("clientName").value,
+        }else{
 
-            whatsapp:
-            document.getElementById("whatsapp").value,
+            document.getElementById("loadingText").innerHTML =
+            "Upload Failed ❌";
 
-            phone:
-            document.getElementById("phone").value,
+            document.getElementById("submitBtn").disabled =
+            false;
 
-            email:
-            document.getElementById("email").value,
+            document.getElementById("submitBtn").innerHTML =
+            "🚀 Submit Lead";
+        }
 
-            address:
-            document.getElementById("address").value,
+    }catch(error){
 
-            propertyName:
-            document.getElementById("propertyName").value,
+        console.log(error);
 
-            propertyType:
-            document.getElementById("propertyType").value,
+        document.getElementById("loadingText").innerHTML =
+        "Network Error ❌ Please Try Again";
 
-            grade:
-            document.getElementById("grade").value,
+        document.getElementById("submitBtn").disabled =
+        false;
 
-            costSqft:
-            document.getElementById("costSqft").value,
-
-            staffDetails1:
-            document.getElementById("staffDetails1").value,
-
-            staffDetails2:
-            document.getElementById("staffDetails2").value,
-
-            constructionWorker:
-            document.getElementById("constructionWorker").value,
-
-            service:
-            selectedServices,
-
-            marketing1:
-            document.getElementById("marketing1").value,
-
-            marketing2:
-            document.getElementById("marketing2").value,
-
-            remarks:
-            document.getElementById("remarks").value,
-
-            lat:lat,
-
-            lng:lng,
-
-            photoURL:photoURL
-
-        })
-
-    });
-
-    const result =
-    await response.json();
-
-    if(result.status === "success"){
-
-        alert(
-        "Lead Submitted Successfully ✅"
-        );
-
-        location.reload();
-
-    }else{
-
-        alert(
-        "Upload Failed ❌"
-        );
-
-        console.log(result.message);
+        document.getElementById("submitBtn").innerHTML =
+        "🚀 Submit Lead";
     }
 }
 
