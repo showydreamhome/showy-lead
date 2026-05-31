@@ -25,6 +25,17 @@ body{
 
 <body>
 
+<input
+type="text"
+id="searchBox"
+placeholder="Search Client / Property"
+style="
+width:100%;
+padding:12px;
+font-size:16px;
+margin-bottom:10px;
+">
+
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -35,8 +46,24 @@ const API =
 "https://script.google.com/macros/s/AKfycbyhOBAiWgj8h-y4Z34GUeClyGM4mBxytaW8myyC8RUHC7M4Kv6r_cpwH83XcZaVagfQ/exec";
 
 const map =
-L.map('map')
-.setView([12.9716,77.5946],12);
+L.map('map');
+
+navigator.geolocation.getCurrentPosition(pos=>{
+
+    map.setView([
+        pos.coords.latitude,
+        pos.coords.longitude
+    ],15);
+
+    L.marker([
+        pos.coords.latitude,
+        pos.coords.longitude
+    ])
+    .addTo(map)
+    .bindPopup("📍 You Are Here")
+    .openPopup();
+
+});
 
 L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -81,12 +108,13 @@ async function loadPins(){
 
             <br><br>
 
-            <a href="${item.photoURL}"
-            target="_blank">
-
-            View Photo
-
-            </a>
+            <img
+          src="${item.photoURL}"
+          width="220"
+          style="
+          border-radius:10px;
+         margin-top:10px;
+         ">
 
             <br><br>
 
