@@ -537,6 +537,35 @@ function detectLocation(){
 
             document.getElementById("address").value =
             data.display_name;
+
+            const duplicateResponse = await fetch(API,{
+
+    method:"POST",
+
+    body:JSON.stringify({
+
+        action:"checkDuplicate",
+
+        lat:lat,
+
+        lng:lng
+
+    })
+
+});
+
+const duplicateData =
+await duplicateResponse.json();
+
+if(duplicateData.found){
+
+    alert(
+        "⚠ Property Already Covered\n\n" +
+        "Property: " + duplicateData.propertyName + "\n" +
+        "Covered By: " + duplicateData.salesPerson
+    );
+
+}
         }
 
     );
