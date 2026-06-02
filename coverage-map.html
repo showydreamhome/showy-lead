@@ -96,7 +96,7 @@ background:white;
 
 <div id="mapTitle">
 
-SHOWY MAP
+🏠 SHOWY LEADS MAP
 
 </div>
 
@@ -248,21 +248,78 @@ async function loadPins(){
 
             <img
 
-            src="${item.photoURL || ''}"
+          src="${item.photoURL || ''}"
 
-            style="
+          style="
 
-            width:100%;
+          width:100%;
 
-            border-radius:10px;
+          border-radius:10px;
 
-            ">
+          ">
 
-            <br><br>
+         <br><br>
 
-            <b>Remarks:</b>
+         <b>🎤 Voice Note:</b>
 
-            ${item.remarks || "-"}
+         <br><br>
+
+         <audio
+         controls
+         style="width:100%;">
+
+          <source
+         src="${item.voiceURL || ''}"
+         type="audio/webm">
+
+         </audio>
+
+         <br><br>
+
+         <b>📝 Remarks:</b>
+
+<br>
+
+${item.remarks || "-"}
+
+<br><br>
+
+<a
+href="https://wa.me/91${item.whatsapp}"
+target="_blank"
+style="
+display:block;
+background:#25D366;
+color:white;
+text-align:center;
+padding:12px;
+border-radius:10px;
+text-decoration:none;
+font-weight:bold;
+margin-bottom:10px;
+">
+
+💬 WhatsApp
+
+</a>
+
+<a
+href="https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lng}"
+target="_blank"
+style="
+display:block;
+background:#EA4335;
+color:white;
+text-align:center;
+padding:12px;
+border-radius:10px;
+text-decoration:none;
+font-weight:bold;
+">
+
+🧭 Navigate
+
+</a>
 
             </div>
 
