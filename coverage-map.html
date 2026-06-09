@@ -5,6 +5,8 @@
 
 <title>SHOWY Coverage Map</title>
 
+
+
 <link rel="stylesheet"
 href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
@@ -75,7 +77,107 @@ body{
 
 }
 
+#legend{
+
+position:absolute;
+
+bottom:20px;
+
+left:20px;
+
+z-index:9999;
+
+background:white;
+
+padding:10px;
+
+border-radius:12px;
+
+box-shadow:0 2px 10px rgba(0,0,0,.2);
+
+display:flex;
+
+gap:8px;
+
+flex-wrap:wrap;
+
+}
+
+#legend button{
+
+border:none;
+
+padding:8px 12px;
+
+border-radius:8px;
+
+cursor:pointer;
+
+font-weight:bold;
+
+background:#f2f2f2;
+
+}
+
+#legend button.active{
+
+background:#000;
+
+color:#fff;
+
+border:2px solid gold;
+
+}
+
+#legend span{
+
+background:#f2f2f2;
+padding:2px 8px;
+border-radius:20px;
+margin-left:5px;
+font-size:12px;
+font-weight:bold;
+color:#000;
+
+}
+
+#legend button.active span{
+
+background:gold;
+color:#000;
+
+}
+
+@media(max-width:768px){
+
+#legend{
+
+left:10px;
+right:10px;
+bottom:10px;
+
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:6px;
+
+}
+
+#legend button{
+
+font-size:13px;
+padding:10px;
+
+}
+
+}
+
 </style>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css">
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css">
 
 </head>
 
@@ -94,6 +196,42 @@ outline:none;
 background:white;
 ">
 
+<div id="legend">
+
+<button
+id="btnAll"
+onclick="filterPins('all')">
+
+All <span id="allCount">0</span>
+
+</button>
+
+<button
+id="btnLead"
+onclick="filterPins('lead')">
+
+🔵 Leads <span id="leadCount">0</span>
+
+</button>
+
+<button
+id="btnProject"
+onclick="filterPins('project')">
+
+🟠 Projects <span id="projectCount">0</span>
+
+</button>
+
+<button
+id="btnBranding"
+onclick="filterPins('branding')">
+
+🔴 Branding <span id="brandingCount">0</span>
+
+</button>
+
+</div>
+
 <div id="mapTitle">
 
 🏠 SHOWY LEADS MAP
@@ -108,6 +246,8 @@ background:white;
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
 <script>
 
 const API =
@@ -119,6 +259,18 @@ L.map('map');
 let userMarker;
 let userCircle;
 let allMarkers = [];
+const markers =
+L.markerClusterGroup({
+
+    disableClusteringAtZoom:16,
+
+    spiderfyOnMaxZoom:true,
+
+    showCoverageOnHover:false,
+
+    zoomToBoundsOnClick:true
+
+});
 
 L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -198,6 +350,30 @@ function(pos){
 
 });
 
+const blueIcon = new L.Icon({
+iconUrl:'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+shadowUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+iconSize:[25,41],
+iconAnchor:[12,41],
+popupAnchor:[1,-34]
+});
+
+const orangeIcon = new L.Icon({
+iconUrl:'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png',
+shadowUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+iconSize:[25,41],
+iconAnchor:[12,41],
+popupAnchor:[1,-34]
+});
+
+const redIcon = new L.Icon({
+iconUrl:'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+shadowUrl:'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+iconSize:[25,41],
+iconAnchor:[12,41],
+popupAnchor:[1,-34]
+});
+
 async function loadPins(){
 
     const response =
@@ -206,86 +382,149 @@ async function loadPins(){
     const data =
     await response.json();
 
-    data.forEach(item=>{
+     let leadCount = 0;
+     let projectCount = 0;
+      let brandingCount = 0;
+ data.forEach(item=>{
 
-        if(item.lat && item.lng){
+    if(item.lat && item.lng){
 
-            const marker =
-            L.marker([
+        // Count records
+        if(item.type === "lead"){
+            leadCount++;
+        }
 
-                parseFloat(item.lat),
+        else if(item.type === "project"){
+            projectCount++;
+        }
 
-                parseFloat(item.lng)
+        else if(item.type === "branding"){
+            brandingCount++;
+        }
 
-            ])
+        let marker;
 
-            .addTo(map)
+document.getElementById("leadCount").innerHTML =
+leadCount;
 
-            .bindPopup(`
+document.getElementById("projectCount").innerHTML =
+projectCount;
 
-            <div style="width:250px">
+document.getElementById("brandingCount").innerHTML =
+brandingCount;
 
-            <h3>
+document.getElementById("allCount").innerHTML =
+leadCount + projectCount + brandingCount;
 
-            ${item.propertyName || "Property"}
 
-            </h3>
+if(item.type === "lead"){
 
-            <b>Client:</b>
-            ${item.clientName || "-"}
+    const lat =
+ parseFloat(item.lat) +
+ ((Math.random() - 0.5) * 0.00025);
 
-            <br>
+ const lng =
+ parseFloat(item.lng) +
+ ((Math.random() - 0.5) * 0.00025);
 
-            <b>Covered By:</b>
-            ${item.marketing1 || "-"}
+ marker = L.marker(
+ [lat,lng],
+ {
+ icon:blueIcon
+ });
 
-            <br>
+}
 
-            <b>Service:</b>
-            ${item.service || "-"}
+else if(item.type === "project"){
 
-            <br><br>
+    marker = L.marker(
+    [item.lat,item.lng],
+    {icon:orangeIcon}
+    );
 
-            <img
+}
 
-          src="${item.photoURL || ''}"
+else if(item.type === "branding"){
 
-          style="
+    const lat =
+    parseFloat(item.lat) +
+    ((Math.random() - 0.5) * 0.00025);
 
-          width:100%;
+    const lng =
+    parseFloat(item.lng) +
+    ((Math.random() - 0.5) * 0.00025);
 
-          border-radius:10px;
+    marker = L.marker(
+    [lat,lng],
+    {icon:redIcon}
+    );
 
-          ">
+}
 
-         <br><br>
+let popup = "";
 
-         <b>🎤 Voice Note:</b>
+if(item.type === "lead"){
 
-         <br><br>
+popup = `
+<div style="width:250px">
 
-         <audio
-         controls
-         style="width:100%;">
+<h3>🏠 Lead</h3>
 
-          <source
-         src="${item.voiceURL || ''}"
-         type="audio/webm">
+<b>Property:</b> ${item.title || "-"}<br>
+<b>Client:</b> ${item.clientName || "-"}<br>
+<b>Covered By:</b> ${item.marketing1 || "-"}<br>
+<b>Service:</b> ${item.service || "-"}<br>
+<b>Remarks:</b> ${item.remarks || "-"}
+`;
 
-         </audio>
+}
 
-         <br><br>
+else if(item.type === "project"){
 
-         <b>📝 Remarks:</b>
+popup = `
+<div style="width:250px">
 
-<br>
+<h3>🏗 Project</h3>
 
-${item.remarks || "-"}
+<b>Project:</b> ${item.title || "-"}<br>
+<b>Builder:</b> ${item.builderName || "-"}<br>
+<b>Type:</b> ${item.projectType || "-"}<br>
+<b>Captured By:</b> ${item.capturedBy || "-"}<br>
+<b>Remarks:</b> ${item.remarks || "-"}
+`;
 
+}
+
+else if(item.type === "branding"){
+
+popup = `
+<div style="width:250px">
+
+<h3>📢 Branding</h3>
+
+<b>Location:</b> ${item.title || "-"}<br>
+<b>Branding:</b> ${item.brandingType || "-"}<br>
+<b>Visibility:</b> ${item.visibility || "-"}<br>
+<b>Captured By:</b> ${item.capturedBy || "-"}<br>
+<b>Remarks:</b> ${item.remarks || "-"}
+`;
+
+}
+
+if(item.photoURL){
+
+if(
+item.whatsapp &&
+item.whatsapp !== "-" &&
+item.whatsapp !== "*" &&
+item.whatsapp !== "#ERROR!"
+){
+
+popup += `
 <br><br>
 
 <a
-href="https://wa.me/91${item.whatsapp}"
+href="https://wa.me/91${String(item.whatsapp).replace(/\D/g,'')}"
 target="_blank"
 style="
 display:block;
@@ -302,42 +541,72 @@ margin-bottom:10px;
 💬 WhatsApp
 
 </a>
+`;
+
+}
+
+popup += `
+<br><br>
+<img
+src="${item.photoURL}"
+style="
+width:100%;
+border-radius:10px;
+">
+`;
+}
+
+popup += `
+
+<br><br>
 
 <a
 href="https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lng}"
 target="_blank"
 style="
 display:block;
-background:#EA4335;
+background:#48B3F0;
 color:white;
 text-align:center;
 padding:12px;
 border-radius:10px;
 text-decoration:none;
 font-weight:bold;
+margin-top:10px;
 ">
 
-🧭 Navigate
+
+
+Get Directions
 
 </a>
 
-            </div>
+</div>
+`;
 
-            `);
+markers.addLayer(marker);
 
-            marker.searchText =
+marker.bindPopup(popup);
 
-            (
+marker.on('click', function(){
 
-            (item.clientName || "") +
+    map.panTo(
+        marker.getLatLng()
+    );
 
-            " " +
+});
 
-            (item.propertyName || "")
+marker.searchText =
+(
+(item.clientName || "") +
+" " +
+(item.title || "")
+).toLowerCase();
 
-            ).toLowerCase();
+marker.markerType = 
+item.type;
 
-            allMarkers.push(marker);
+allMarkers.push(marker);
 
         }
 
@@ -346,6 +615,25 @@ font-weight:bold;
 }
 
 loadPins();
+
+map.addLayer(markers);
+
+document
+.getElementById('btnAll')
+.classList.add('active');
+
+setTimeout(() => {
+
+    if(markers.getLayers().length > 0){
+
+        map.fitBounds(
+            markers.getBounds(),
+            {padding:[50,50]}
+        );
+
+    }
+
+},1000);
 
 document
 
@@ -371,13 +659,15 @@ function(){
 
         ){
 
-            marker.addTo(map);
+            if(!markers.hasLayer(marker)){
+            markers.addLayer(marker);
+            }
 
         }
 
         else{
 
-            map.removeLayer(marker);
+            markers.removeLayer(marker);
 
         }
 
@@ -423,6 +713,46 @@ function(){
     );
 
 });
+
+
+function filterPins(type){
+
+document
+.querySelectorAll('#legend button')
+.forEach(btn=>btn.classList.remove('active'));
+
+if(type === "all")
+document.getElementById('btnAll')
+.classList.add('active');
+
+if(type === "lead")
+document.getElementById('btnLead')
+.classList.add('active');
+
+if(type === "project")
+document.getElementById('btnProject')
+.classList.add('active');
+
+if(type === "branding")
+document.getElementById('btnBranding')
+.classList.add('active');
+
+markers.clearLayers();
+
+allMarkers.forEach(marker=>{
+
+if(
+type === "all" ||
+marker.markerType === type
+){
+
+markers.addLayer(marker);
+
+}
+
+});
+
+}
 
 </script>
 
